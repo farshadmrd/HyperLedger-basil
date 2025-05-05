@@ -29,7 +29,7 @@ import io.grpc.TlsChannelCredentials;
 public final class App {
 
 	// path to your test-network directory included, e.g.: Paths.get("..", "..", "test-network")
-	private static final Path PATH_TO_TEST_NETWORK = Paths.get("..", "..", "test-network");
+	private static final Path PATH_TO_TEST_NETWORK = Paths.get("/home/farshad/go/src/github.com/farshadmrd/fabric-samples/test-network");
 
 	private static final String CHANNEL_NAME = System.getenv().getOrDefault("CHANNEL_NAME", "mychannel");
 	private static final String CHAINCODE_NAME = System.getenv().getOrDefault("CHAINCODE_NAME", "basic");
