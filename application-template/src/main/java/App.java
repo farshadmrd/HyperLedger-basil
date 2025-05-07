@@ -111,7 +111,7 @@ public final class App {
 				byte[] result;
 				// result = contractOrg1.submitTransaction("CreateAsset",
 				// "assetId1", "yellow", "5", "Tom", "1300");
-				result = contractOrg1.submitTransaction("createBasil", "basil001", "Italy");
+				result = contractOrg1.submitTransaction("createBasil", "basil002", "france");
 				System.out.println("Create result= " + new String(result));
 
 				// result = contractOrg1.evaluateTransaction("ReadAsset",
