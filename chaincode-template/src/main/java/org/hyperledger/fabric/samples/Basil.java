@@ -17,10 +17,10 @@ public final class Basil {
     private final Long creationTimestamp; 
 
     @Property()
-    private final String station; // Changed from location/origin to station
+    private final String origin; // Greenhouse or starting point
 
     @Property()
-    private final String currentStatus;
+    private final String currentStatus; // e.g., In Transit, Delivered
 
     @Property()
     private final String currentGps;
@@ -34,24 +34,18 @@ public final class Basil {
     public Basil(
             @JsonProperty("qrCode") String qrCode,
             @JsonProperty("creationTimestamp") Long creationTimestamp,
-            @JsonProperty("station") String station,
+            @JsonProperty("origin") String origin,
             @JsonProperty("currentStatus") String currentStatus,
             @JsonProperty("currentGps") String currentGps,
             @JsonProperty("currentOwner") Owner currentOwner,
             @JsonProperty("transportHistory") List<BasilLeg> transportHistory) {
         this.qrCode = qrCode;
         this.creationTimestamp = creationTimestamp;
-        this.station = station;
+        this.origin = origin;
         this.currentStatus = currentStatus;
         this.currentGps = currentGps;
         this.currentOwner = currentOwner;
         this.transportHistory = transportHistory;
-    }
-    
-    // Simplified constructor for creation (initializes currentGps = station)
-    public Basil(String qrCode, Long creationTimestamp, String station, 
-                String currentStatus, Owner currentOwner, List<BasilLeg> transportHistory) {
-        this(qrCode, creationTimestamp, station, currentStatus, station, currentOwner, transportHistory);
     }
 
     public String getQrCode() {
@@ -62,8 +56,8 @@ public final class Basil {
         return creationTimestamp;
     }
 
-    public String getStation() {
-        return station;
+    public String getOrigin() {
+        return origin;
     }
 
     public String getCurrentStatus() {
@@ -100,7 +94,7 @@ public final class Basil {
         return "Basil{" +
                 "qrCode='" + qrCode + '\'' +
                 ", creationTimestamp=" + creationTimestamp +
-                ", station='" + station + '\'' +
+                ", origin='" + origin + '\'' +
                 ", currentStatus='" + currentStatus + '\'' +
                 ", currentGps='" + currentGps + '\'' +
                 ", currentOwner=" + currentOwner +

@@ -32,7 +32,7 @@ public class BasilContract implements ContractInterface {
 
     // Create a new basil plant
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public void createBasil(Context ctx, String qrCode, String station, String gps, String temperature, String humidity) {
+    public void createBasil(Context ctx, String qrCode, String origin) {
         rejectIfSupermarket(ctx);
         ChaincodeStub stub = ctx.getStub();
 
@@ -44,34 +44,13 @@ public class BasilContract implements ContractInterface {
         Owner owner = new Owner(orgId, "Greenhouse");
         Long creationTimestamp = stub.getTxTimestamp().getEpochSecond();
 
-        // Use provided temperature and humidity instead of "N/A"
-        BasilLeg initialLeg = createBasilLeg(creationTimestamp, 
-                                            gps != null && !gps.isEmpty() ? gps : station, 
-                                            temperature != null ? temperature : "N/A", 
-                                            humidity != null ? humidity : "N/A", 
-                                            owner);
+        BasilLeg initialLeg = createBasilLeg(creationTimestamp, origin, "N/A", "N/A", owner);
         List<BasilLeg> history = new ArrayList<>();
         history.add(initialLeg);
 
-        // Now use the provided GPS value if available, otherwise fallback to station
-        String initialStatus = "Created";
-        // Use separate gps parameter if provided, otherwise use station
-        String initialGps = gps != null && !gps.isEmpty() ? gps : station;
-        
-        Basil basil = new Basil(qrCode, creationTimestamp, station, initialStatus, initialGps, owner, history);
+        Basil basil = new Basil(qrCode, creationTimestamp, origin, "Created", origin, owner, history);
 
         stub.putStringState(qrCode, genson.serialize(basil));
-    }
-
-    // For backward compatibility, keep the original methods
-    @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public void createBasil(Context ctx, String qrCode, String station, String temperature, String humidity) {
-        createBasil(ctx, qrCode, station, null, temperature, humidity);
-    }
-
-    @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public void createBasil(Context ctx, String qrCode, String station) {
-        createBasil(ctx, qrCode, station, null, "N/A", "N/A");
     }
 
     // Stop tracking a basil plant (delete it)
@@ -109,7 +88,7 @@ public class BasilContract implements ContractInterface {
         Basil updated = new Basil(
                 basil.getQrCode(),
                 basil.getCreationTimestamp(),
-                basil.getStation(), // Changed from location/origin to station
+                basil.getOrigin(),
                 status,
                 gps,
                 owner,
@@ -151,38 +130,13 @@ public class BasilContract implements ContractInterface {
         Basil updated = new Basil(
                 basil.getQrCode(),
                 basil.getCreationTimestamp(),
-                basil.getStation(), // Changed from location/origin to station
+                basil.getOrigin(),
                 basil.getCurrentStatus(),
                 basil.getCurrentGps(),
                 newOwner,
                 basil.getTransportHistory());
 
         stub.putStringState(qrCode, genson.serialize(updated));
-    }
-
-    // Get all basil assets
-    @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public String getAllBasil(final Context ctx) {
-        ChaincodeStub stub = ctx.getStub();
-        List<Basil> queryResults = new ArrayList<>();
-
-        // Get all keys that start with empty string (all keys)
-        try {
-            // Get all basil assets
-            stub.getStateByRange("", "").forEach(item -> {
-                String key = item.getKey();
-                String value = item.getStringValue();
-                
-                // Deserialize and add to results
-                Basil basil = genson.deserialize(value, Basil.class);
-                queryResults.add(basil);
-            });
-            
-            // Return the list of basil assets
-            return genson.serialize(queryResults);
-        } catch (Exception e) {
-            throw new ChaincodeException("Failed to get all basil assets: " + e.getMessage());
-        }
     }
 
     private String getClientOrgId(Context ctx) {

@@ -2,4 +2,3 @@
 1. clone this repo
 2. import the two projects in an IDE as gradle ones
 3. fun
-# HyperLedger-basil
